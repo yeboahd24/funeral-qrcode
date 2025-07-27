@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+
+{% block title %}Create Funeral Program - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header">
+        <h1>Create Funeral Program</h1>
+        <p>Create a new digital funeral program with QR code access</p>
+    </div>
+    
+    <nav class="nav">
+        <ul>
+            <li><a href="/api/admin/dashboard">Dashboard</a></li>
+            <li><a href="/api/admin/create">Create New Program</a></li>
+            <li><a href="/docs">API Documentation</a></li>
+        </ul>
+    </nav>
+    
+    <div class="card">
+        <h2 style="margin-bottom: 2rem; color: #2c3e50;">Program Details</h2>
+        
+        <form action="/api/admin/create" method="post" enctype="multipart/form-data">
+            <div class="grid grid-2">
+                <div>
+                    <div class="form-group">
+                        <label for="deceased_name">Deceased Name *</label>
+                        <input type="text" id="deceased_name" name="deceased_name" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date_of_birth">Date of Birth</label>
+                        <input type="text" id="date_of_birth" name="date_of_birth" placeholder="e.g., January 15, 1950">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date_of_death">Date of Death</label>
+                        <input type="text" id="date_of_death" name="date_of_death" placeholder="e.g., December 20, 2024">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="funeral_date">Funeral Date *</label>
+                        <input type="text" id="funeral_date" name="funeral_date" required placeholder="e.g., December 25, 2024 at 10:00 AM">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="funeral_location">Funeral Location *</label>
+                        <input type="text" id="funeral_location" name="funeral_location" required placeholder="e.g., St. Mary's Church, 123 Main St">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="deceased_photo">Deceased Photo</label>
+                        <input type="file" id="deceased_photo" name="deceased_photo" accept="image/*">
+                        <small style="color: #7f8c8d;">Optional: Upload a photo of the deceased</small>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="form-group">
+                        <label for="biography">Biography *</label>
+                        <textarea id="biography" name="biography" required placeholder="Write a brief biography of the deceased..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="family_details">Family Details</label>
+                        <textarea id="family_details" name="family_details" placeholder="List surviving family members..."></textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="special_message">Special Message</label>
+                        <textarea id="special_message" name="special_message" placeholder="Any special message or tribute..."></textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e0e0e0;">
+                <button type="submit" class="btn btn-success" style="font-size: 1.1rem; padding: 15px 30px;">
+                    Create Funeral Program
+                </button>
+                <a href="/api/admin/dashboard" class="btn btn-secondary" style="font-size: 1.1rem; padding: 15px 30px; margin-left: 1rem;">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    <div class="card">
+        <h3 style="color: #2c3e50; margin-bottom: 1rem;">What happens next?</h3>
+        <ul style="color: #7f8c8d; line-height: 1.8;">
+            <li>A unique QR code will be generated for this funeral program</li>
+            <li>You can add program events (schedule) after creation</li>
+            <li>The QR code can be printed and shared with attendees</li>
+            <li>Attendees can scan the QR code to view the program and obituary</li>
+            <li>You can edit the program details anytime from the admin dashboard</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}

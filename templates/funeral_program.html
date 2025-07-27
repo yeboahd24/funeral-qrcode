@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}{{ program.deceased_name }} - Funeral Program{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header" style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="color: #2c3e50; margin-bottom: 0.5rem;">{{ program.deceased_name }}</h1>
+        {% if program.date_of_birth and program.date_of_death %}
+        <p style="font-size: 1.2rem; color: #7f8c8d; margin-bottom: 1rem;">
+            {{ program.date_of_birth }} - {{ program.date_of_death }}
+        </p>
+        {% endif %}
+        <p style="font-size: 1.1rem; color: #34495e;">
+            <strong>Funeral Service:</strong> {{ program.funeral_date }}
+        </p>
+        <p style="font-size: 1.1rem; color: #34495e;">
+            <strong>Location:</strong> {{ program.funeral_location }}
+        </p>
+    </div>
+
+    {% if program.deceased_photo_url %}
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <img src="{{ program.deceased_photo_url }}" alt="{{ program.deceased_name }}" 
+             style="width: 200px; height: 200px; object-fit: cover; border-radius: 50%; border: 5px solid #e0e0e0; box-shadow: 0 4px 8px rgba(0,0,0,0.1);">
+    </div>
+    {% endif %}
+
+    {% if events %}
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="color: #2c3e50; margin-bottom: 1.5rem; text-align: center;">Order of Service</h2>
+        <div style="max-width: 600px; margin: 0 auto;">
+            {% for event in events %}
+            <div style="display: flex; align-items: start; margin-bottom: 1.5rem; padding: 1rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #3498db;">
+                <div style="min-width: 100px; font-weight: bold; color: #2c3e50;">
+                    {{ event.time }}
+                </div>
+                <div style="flex: 1; margin-left: 1rem;">
+                    <h4 style="color: #2c3e50; margin-bottom: 0.5rem;">{{ event.title }}</h4>
+                    {% if event.speaker_name %}
+                    <p style="color: #7f8c8d; margin-bottom: 0.5rem; font-style: italic;">
+                        Speaker: {{ event.speaker_name }}
+                    </p>
+                    {% endif %}
+                    {% if event.description %}
+                    <p style="color: #34495e; line-height: 1.6;">{{ event.description }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if obituary %}
+    <div class="card" style="margin-bottom: 2rem;">
+        <div style="text-align: center; margin-bottom: 2rem;">
+            <h2 style="color: #2c3e50;">In Loving Memory</h2>
+            <a href="/api/funeral/program/{{ program.qr_code_id }}/obituary/view" class="btn btn-primary" style="margin-top: 1rem;">
+                Read Full Obituary
+            </a>
+        </div>
+        
+        <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <p style="font-size: 1.1rem; line-height: 1.8; color: #34495e; font-style: italic;">
+                {{ obituary.biography[:300] }}{% if obituary.biography|length > 300 %}...{% endif %}
+            </p>
+        </div>
+    </div>
+    {% endif %}
+
+    <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: #f8f9fa; border-radius: 8px;">
+        <p style="color: #7f8c8d; font-style: italic; margin-bottom: 1rem;">
+            "Those we love don't go away, they walk beside us every day."
+        </p>
+        <p style="color: #95a5a6; font-size: 0.9rem;">
+            This digital memorial was created with love and remembrance.
+        </p>
+    </div>
+</div>
+
+<style>
+    @media print {
+        .btn { display: none; }
+        body { background: white; }
+        .card { box-shadow: none; border: 1px solid #ddd; }
+    }
+</style>
+{% endblock %}

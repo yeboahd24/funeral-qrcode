@@ -1,0 +1,185 @@
+{% extends "base.html" %}
+
+{% block title %}{{ program.deceased_name }} - Program Details{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header">
+        <h1>Program Details</h1>
+        <p>{{ program.deceased_name }}</p>
+    </div>
+    
+    <nav class="nav">
+        <ul>
+            <li><a href="/api/admin/dashboard">Dashboard</a></li>
+            <li><a href="/api/admin/create">Create New Program</a></li>
+            <li><a href="/api/admin/program/{{ program.id }}/edit">Edit Program</a></li>
+            <li><a href="/docs">API Documentation</a></li>
+        </ul>
+    </nav>
+
+    <div class="grid grid-2" style="margin-bottom: 2rem;">
+        <div class="card">
+            <h2 style="color: #2c3e50; margin-bottom: 1.5rem;">Program Information</h2>
+            
+            <div style="margin-bottom: 1rem;">
+                <strong>Deceased Name:</strong> {{ program.deceased_name }}
+            </div>
+            
+            {% if program.date_of_birth %}
+            <div style="margin-bottom: 1rem;">
+                <strong>Date of Birth:</strong> {{ program.date_of_birth }}
+            </div>
+            {% endif %}
+            
+            {% if program.date_of_death %}
+            <div style="margin-bottom: 1rem;">
+                <strong>Date of Death:</strong> {{ program.date_of_death }}
+            </div>
+            {% endif %}
+            
+            <div style="margin-bottom: 1rem;">
+                <strong>Funeral Date:</strong> {{ program.funeral_date }}
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <strong>Funeral Location:</strong> {{ program.funeral_location }}
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <strong>QR Code ID:</strong> 
+                <code style="background: #f8f9fa; padding: 2px 6px; border-radius: 3px;">{{ program.qr_code_id }}</code>
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <strong>Status:</strong> 
+                {% if program.is_active %}
+                    <span style="background: #27ae60; color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.9rem;">Active</span>
+                {% else %}
+                    <span style="background: #e74c3c; color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.9rem;">Inactive</span>
+                {% endif %}
+            </div>
+            
+            <div style="margin-bottom: 1rem;">
+                <strong>Created:</strong> {{ program.created_at.strftime('%Y-%m-%d %H:%M') if program.created_at else 'N/A' }}
+            </div>
+            
+            {% if program.updated_at %}
+            <div style="margin-bottom: 1rem;">
+                <strong>Last Updated:</strong> {{ program.updated_at.strftime('%Y-%m-%d %H:%M') }}
+            </div>
+            {% endif %}
+        </div>
+
+        <div class="card">
+            {% if program.deceased_photo_url %}
+            <div style="text-align: center; margin-bottom: 1.5rem;">
+                <img src="{{ program.deceased_photo_url }}" alt="{{ program.deceased_name }}" 
+                     style="width: 200px; height: 200px; object-fit: cover; border-radius: 10px; border: 3px solid #e0e0e0;">
+            </div>
+            {% endif %}
+            
+            <div style="display: flex; flex-direction: column; gap: 0.5rem;">
+                <a href="/api/admin/program/{{ program.id }}/edit" class="btn btn-primary">Edit Program</a>
+                <a href="/api/funeral/program/{{ program.qr_code_id }}/view" class="btn btn-success" target="_blank">View Public Page</a>
+                <a href="/api/qr/download/{{ program.qr_code_id }}" class="btn" style="background: #9b59b6;">Download QR Code</a>
+                <a href="/api/qr/download/{{ program.qr_code_id }}?format=svg" class="btn" style="background: #f39c12;">Download QR (SVG)</a>
+            </div>
+        </div>
+    </div>
+
+    {% if events %}
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="color: #2c3e50; margin-bottom: 1.5rem;">Program Events ({{ events|length }})</h2>
+        
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #f8f9fa;">
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e0e0e0;">Time</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e0e0e0;">Title</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e0e0e0;">Speaker</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e0e0e0;">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                    <tr style="border-bottom: 1px solid #e0e0e0;">
+                        <td style="padding: 12px; font-weight: bold;">{{ event.time }}</td>
+                        <td style="padding: 12px;">{{ event.title }}</td>
+                        <td style="padding: 12px; color: #7f8c8d;">{{ event.speaker_name or '-' }}</td>
+                        <td style="padding: 12px; color: #34495e;">{{ event.description or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    {% else %}
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="color: #2c3e50; margin-bottom: 1.5rem;">Program Events</h2>
+        <div style="text-align: center; padding: 2rem; color: #7f8c8d;">
+            <p>No events have been added to this program yet.</p>
+            <a href="/api/admin/program/{{ program.id }}/edit" class="btn btn-primary" style="margin-top: 1rem;">Add Events</a>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if obituary %}
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="color: #2c3e50; margin-bottom: 1.5rem;">Obituary</h2>
+        
+        <div style="margin-bottom: 1.5rem;">
+            <h4 style="color: #34495e; margin-bottom: 0.5rem;">Biography</h4>
+            <div style="background: #f8f9fa; padding: 1rem; border-radius: 5px; line-height: 1.6;">
+                {{ obituary.biography[:500] }}{% if obituary.biography|length > 500 %}...{% endif %}
+            </div>
+        </div>
+        
+        {% if obituary.family_details %}
+        <div style="margin-bottom: 1.5rem;">
+            <h4 style="color: #34495e; margin-bottom: 0.5rem;">Family Details</h4>
+            <div style="background: #f8f9fa; padding: 1rem; border-radius: 5px; line-height: 1.6;">
+                {{ obituary.family_details[:300] }}{% if obituary.family_details|length > 300 %}...{% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
+        {% if obituary.special_message %}
+        <div style="margin-bottom: 1.5rem;">
+            <h4 style="color: #34495e; margin-bottom: 0.5rem;">Special Message</h4>
+            <div style="background: #f8f9fa; padding: 1rem; border-radius: 5px; line-height: 1.6; font-style: italic;">
+                {{ obituary.special_message }}
+            </div>
+        </div>
+        {% endif %}
+        
+        <div style="margin-top: 1.5rem;">
+            <a href="/api/funeral/program/{{ program.qr_code_id }}/obituary/view" class="btn btn-secondary" target="_blank">View Full Obituary</a>
+            <a href="/api/admin/program/{{ program.id }}/obituary/pdf" class="btn" style="background: #e74c3c; color: white; margin-left: 0.5rem;">Download PDF</a>
+        </div>
+    </div>
+    {% else %}
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="color: #2c3e50; margin-bottom: 1.5rem;">Obituary</h2>
+        <div style="text-align: center; padding: 2rem; color: #7f8c8d;">
+            <p>No obituary has been created for this program yet.</p>
+            <a href="/api/admin/program/{{ program.id }}/edit" class="btn btn-primary" style="margin-top: 1rem;">Add Obituary</a>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card">
+        <h2 style="color: #e74c3c; margin-bottom: 1.5rem;">Danger Zone</h2>
+        <p style="color: #7f8c8d; margin-bottom: 1rem;">
+            Deleting this program will permanently remove all associated data including events, obituary, and uploaded files.
+        </p>
+        <form action="/api/admin/program/{{ program.id }}/delete" method="post" 
+              onsubmit="return confirm('Are you sure you want to delete this program? This action cannot be undone.')">
+            <button type="submit" class="btn" style="background: #e74c3c; color: white;">
+                Delete Program
+            </button>
+        </form>
+    </div>
+</div>
+{% endblock %}

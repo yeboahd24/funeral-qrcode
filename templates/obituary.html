@@ -1,0 +1,140 @@
+{% extends "base.html" %}
+
+{% block title %}{{ program.deceased_name }} - Obituary{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header" style="text-align: center; margin-bottom: 3rem;">
+        <h1 style="color: #2c3e50; margin-bottom: 0.5rem;">{{ program.deceased_name }}</h1>
+        {% if program.date_of_birth and program.date_of_death %}
+        <p style="font-size: 1.2rem; color: #7f8c8d; margin-bottom: 1rem;">
+            {{ program.date_of_birth }} - {{ program.date_of_death }}
+        </p>
+        {% endif %}
+        <div style="margin: 1rem 0;">
+            <a href="/api/funeral/program/{{ program.qr_code_id }}/view" class="btn btn-secondary">
+                ← Back to Program
+            </a>
+        </div>
+    </div>
+
+    {% if program.deceased_photo_url %}
+    <div style="text-align: center; margin-bottom: 3rem;">
+        <img src="{{ program.deceased_photo_url }}" alt="{{ program.deceased_name }}" 
+             style="width: 250px; height: 250px; object-fit: cover; border-radius: 15px; border: 5px solid #e0e0e0; box-shadow: 0 6px 12px rgba(0,0,0,0.1);">
+    </div>
+    {% endif %}
+
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="color: #2c3e50; margin-bottom: 1.5rem; text-align: center;">Biography</h2>
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div style="font-size: 1.1rem; line-height: 1.8; color: #34495e; text-align: justify;">
+                {{ obituary.biography|replace('\n', '<br>')|safe }}
+            </div>
+        </div>
+    </div>
+
+    {% if obituary.family_details %}
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="color: #2c3e50; margin-bottom: 1.5rem; text-align: center;">Family</h2>
+        <div style="max-width: 800px; margin: 0 auto;">
+            <div style="font-size: 1rem; line-height: 1.7; color: #34495e;">
+                {{ obituary.family_details|replace('\n', '<br>')|safe }}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if obituary.special_message %}
+    <div class="card" style="margin-bottom: 2rem; background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);">
+        <h2 style="color: #2c3e50; margin-bottom: 1.5rem; text-align: center;">Special Message</h2>
+        <div style="max-width: 800px; margin: 0 auto; text-align: center;">
+            <div style="font-size: 1.1rem; line-height: 1.8; color: #34495e; font-style: italic; padding: 1rem;">
+                {{ obituary.special_message|replace('\n', '<br>')|safe }}
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if obituary.photos and obituary.photos|length > 1 %}
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="color: #2c3e50; margin-bottom: 1.5rem; text-align: center;">Photo Gallery</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; max-width: 800px; margin: 0 auto;">
+            {% for photo in obituary.photos %}
+            {% if photo != program.deceased_photo_url %}
+            <div style="text-align: center;">
+                <img src="{{ photo }}" alt="Memory photo" 
+                     style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; border: 2px solid #e0e0e0; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            </div>
+            {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {% if obituary.tributes and obituary.tributes|length > 0 %}
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="color: #2c3e50; margin-bottom: 1.5rem; text-align: center;">Tributes & Messages</h2>
+        <div style="max-width: 800px; margin: 0 auto;">
+            {% for tribute in obituary.tributes %}
+            <div style="margin-bottom: 1.5rem; padding: 1.5rem; background: #f8f9fa; border-radius: 8px; border-left: 4px solid #3498db;">
+                <p style="font-size: 1rem; line-height: 1.7; color: #34495e; margin-bottom: 0.5rem; font-style: italic;">
+                    "{{ tribute.message }}"
+                </p>
+                <p style="text-align: right; color: #7f8c8d; font-weight: bold;">
+                    - {{ tribute.author }}
+                </p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="card" style="margin-bottom: 2rem;">
+        <h2 style="color: #2c3e50; margin-bottom: 1.5rem; text-align: center;">Funeral Service Details</h2>
+        <div style="max-width: 600px; margin: 0 auto; text-align: center;">
+            <div style="font-size: 1.1rem; line-height: 1.8; color: #34495e;">
+                <p style="margin-bottom: 1rem;">
+                    <strong>Date & Time:</strong><br>
+                    {{ program.funeral_date }}
+                </p>
+                <p style="margin-bottom: 1rem;">
+                    <strong>Location:</strong><br>
+                    {{ program.funeral_location }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div style="text-align: center; margin-top: 3rem; padding: 2rem; background: #f8f9fa; border-radius: 8px;">
+        <p style="color: #7f8c8d; font-style: italic; margin-bottom: 1rem; font-size: 1.1rem;">
+            "In the hearts of those who loved you, you will always be there."
+        </p>
+        <div style="margin-top: 2rem;">
+            <a href="/api/funeral/program/{{ program.qr_code_id }}/view" class="btn btn-primary">
+                Return to Program
+            </a>
+            {% if obituary.pdf_url %}
+            <a href="/api/admin/program/{{ program.id }}/obituary/pdf/view" class="btn" style="background: #e74c3c; color: white; margin-left: 0.5rem;" target="_blank">
+                Download PDF
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    @media print {
+        .btn { display: none; }
+        body { background: white; }
+        .card { box-shadow: none; border: 1px solid #ddd; page-break-inside: avoid; }
+        .header { page-break-after: avoid; }
+    }
+    
+    @media (max-width: 768px) {
+        .container { padding: 1rem; }
+        .card { margin-bottom: 1rem; }
+        img { width: 200px !important; height: 200px !important; }
+    }
+</style>
+{% endblock %}

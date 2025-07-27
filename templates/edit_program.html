@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %}Edit {{ program.deceased_name }} - Admin{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header">
+        <h1>Edit Funeral Program</h1>
+        <p>{{ program.deceased_name }}</p>
+    </div>
+    
+    <nav class="nav">
+        <ul>
+            <li><a href="/api/admin/dashboard">Dashboard</a></li>
+            <li><a href="/api/admin/program/{{ program.id }}">View Program</a></li>
+            <li><a href="/api/admin/create">Create New Program</a></li>
+            <li><a href="/docs">API Documentation</a></li>
+        </ul>
+    </nav>
+    
+    <div class="card">
+        <h2 style="margin-bottom: 2rem; color: #2c3e50;">Program Details</h2>
+        
+        <form action="/api/admin/program/{{ program.id }}/edit" method="post" enctype="multipart/form-data">
+            <div class="grid grid-2">
+                <div>
+                    <div class="form-group">
+                        <label for="deceased_name">Deceased Name *</label>
+                        <input type="text" id="deceased_name" name="deceased_name" value="{{ program.deceased_name }}" required>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date_of_birth">Date of Birth</label>
+                        <input type="text" id="date_of_birth" name="date_of_birth" value="{{ program.date_of_birth or '' }}" placeholder="e.g., January 15, 1950">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="date_of_death">Date of Death</label>
+                        <input type="text" id="date_of_death" name="date_of_death" value="{{ program.date_of_death or '' }}" placeholder="e.g., December 20, 2024">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="funeral_date">Funeral Date *</label>
+                        <input type="text" id="funeral_date" name="funeral_date" value="{{ program.funeral_date }}" required placeholder="e.g., December 25, 2024 at 10:00 AM">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="funeral_location">Funeral Location *</label>
+                        <input type="text" id="funeral_location" name="funeral_location" value="{{ program.funeral_location }}" required placeholder="e.g., St. Mary's Church, 123 Main St">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="deceased_photo">Update Deceased Photo</label>
+                        <input type="file" id="deceased_photo" name="deceased_photo" accept="image/*">
+                        {% if program.deceased_photo_url %}
+                        <div style="margin-top: 0.5rem;">
+                            <img src="{{ program.deceased_photo_url }}" alt="Current photo" style="width: 100px; height: 100px; object-fit: cover; border-radius: 8px;">
+                            <small style="display: block; color: #7f8c8d;">Current photo</small>
+                        </div>
+                        {% endif %}
+                        <small style="color: #7f8c8d;">Leave empty to keep current photo</small>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="is_active">Status</label>
+                        <select id="is_active" name="is_active">
+                            <option value="true" {% if program.is_active %}selected{% endif %}>Active</option>
+                            <option value="false" {% if not program.is_active %}selected{% endif %}>Inactive</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div>
+                    <div class="form-group">
+                        <label for="biography">Biography *</label>
+                        <textarea id="biography" name="biography" required placeholder="Write a brief biography of the deceased...">{{ obituary.biography if obituary else '' }}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="family_details">Family Details</label>
+                        <textarea id="family_details" name="family_details" placeholder="List surviving family members...">{{ obituary.family_details if obituary else '' }}</textarea>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="special_message">Special Message</label>
+                        <textarea id="special_message" name="special_message" placeholder="Any special message or tribute...">{{ obituary.special_message if obituary else '' }}</textarea>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #e0e0e0;">
+                <button type="submit" class="btn btn-success" style="font-size: 1.1rem; padding: 15px 30px;">
+                    Update Program
+                </button>
+                <a href="/api/admin/program/{{ program.id }}" class="btn btn-secondary" style="font-size: 1.1rem; padding: 15px 30px; margin-left: 1rem;">
+                    Cancel
+                </a>
+            </div>
+        </form>
+    </div>
+    
+    {% if events %}
+    <div class="card" style="margin-top: 2rem;">
+        <h3 style="color: #2c3e50; margin-bottom: 1.5rem;">Program Events</h3>
+        <div style="overflow-x: auto;">
+            <table style="width: 100%; border-collapse: collapse;">
+                <thead>
+                    <tr style="background: #f8f9fa;">
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e0e0e0;">Time</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e0e0e0;">Title</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e0e0e0;">Speaker</th>
+                        <th style="padding: 12px; text-align: left; border-bottom: 2px solid #e0e0e0;">Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for event in events %}
+                    <tr style="border-bottom: 1px solid #e0e0e0;">
+                        <td style="padding: 12px; font-weight: bold;">{{ event.time }}</td>
+                        <td style="padding: 12px;">{{ event.title }}</td>
+                        <td style="padding: 12px; color: #7f8c8d;">{{ event.speaker_name or '-' }}</td>
+                        <td style="padding: 12px; color: #34495e;">{{ event.description or '-' }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <p style="margin-top: 1rem; color: #7f8c8d; font-size: 0.9rem;">
+            Note: Event editing will be available in a future update. For now, please contact support to modify events.
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

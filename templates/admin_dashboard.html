@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Funeral Program System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="header">
+        <h1>Admin Dashboard</h1>
+        <p>Manage Funeral Programs</p>
+    </div>
+    
+    <nav class="nav">
+        <ul>
+            <li><a href="/api/admin/dashboard">Dashboard</a></li>
+            <li><a href="/api/admin/create">Create New Program</a></li>
+            <li><a href="/docs">API Documentation</a></li>
+        </ul>
+    </nav>
+    
+    <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h2>Funeral Programs</h2>
+            <a href="/api/admin/create" class="btn btn-success">+ Create New Program</a>
+        </div>
+        
+        {% if programs %}
+            <div class="grid grid-2">
+                {% for program in programs %}
+                <div class="card" style="margin-bottom: 1rem;">
+                    <div style="display: flex; justify-content: space-between; align-items: start;">
+                        <div style="flex: 1;">
+                            <h3 style="color: #2c3e50; margin-bottom: 0.5rem;">{{ program.deceased_name }}</h3>
+                            <p style="color: #7f8c8d; margin-bottom: 0.5rem;">
+                                <strong>Date:</strong> {{ program.funeral_date }}
+                            </p>
+                            <p style="color: #7f8c8d; margin-bottom: 0.5rem;">
+                                <strong>Location:</strong> {{ program.funeral_location }}
+                            </p>
+                            <p style="color: #7f8c8d; margin-bottom: 1rem;">
+                                <strong>QR Code ID:</strong> {{ program.qr_code_id[:8] }}...
+                            </p>
+                            
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                                <a href="/api/admin/program/{{ program.id }}" class="btn btn-primary" style="font-size: 0.9rem; padding: 8px 16px;">View</a>
+                                <a href="/api/admin/program/{{ program.id }}/edit" class="btn btn-secondary" style="font-size: 0.9rem; padding: 8px 16px;">Edit</a>
+                                <a href="/api/funeral/program/{{ program.qr_code_id }}/view" class="btn btn-success" style="font-size: 0.9rem; padding: 8px 16px;" target="_blank">Public View</a>
+                                <a href="/api/qr/download/{{ program.qr_code_id }}" class="btn" style="background: #9b59b6; font-size: 0.9rem; padding: 8px 16px;">Download QR</a>
+                            </div>
+                        </div>
+                        
+                        {% if program.deceased_photo_url %}
+                        <div style="margin-left: 1rem;">
+                            <img src="{{ program.deceased_photo_url }}" alt="{{ program.deceased_name }}" 
+                                 style="width: 80px; height: 80px; object-fit: cover; border-radius: 50%; border: 3px solid #e0e0e0;">
+                        </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e0e0e0;">
+                        <small style="color: #95a5a6;">
+                            Created: {{ program.created_at.strftime('%Y-%m-%d %H:%M') if program.created_at else 'N/A' }}
+                        </small>
+                        <span style="float: right;">
+                            {% if program.is_active %}
+                                <span style="background: #27ae60; color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.8rem;">Active</span>
+                            {% else %}
+                                <span style="background: #e74c3c; color: white; padding: 2px 8px; border-radius: 3px; font-size: 0.8rem;">Inactive</span>
+                            {% endif %}
+                        </span>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div style="text-align: center; padding: 3rem; color: #7f8c8d;">
+                <h3>No funeral programs created yet</h3>
+                <p style="margin: 1rem 0;">Get started by creating your first funeral program.</p>
+                <a href="/api/admin/create" class="btn btn-success">Create First Program</a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
