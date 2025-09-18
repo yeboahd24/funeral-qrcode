@@ -4,7 +4,7 @@ from sqlalchemy.orm import sessionmaker
 import os
 
 # Database configuration
-DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./funeral_programs.db")
+DATABASE_URL = os.getenv("DB_URL", "sqlite:///./funeral_programs.db")
 
 engine = create_engine(
     DATABASE_URL, 

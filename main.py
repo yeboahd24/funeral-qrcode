@@ -6,6 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import os
 from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 # Import our modules
 from app.database import engine, Base
