@@ -6,6 +6,10 @@ import os
 # Database configuration
 DATABASE_URL = os.getenv("DB_URL", "sqlite:///./funeral_programs.db")
 
+# Fix postgres:// to postgresql:// for SQLAlchemy compatibility
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql://", 1)
+
 engine = create_engine(
     DATABASE_URL, 
     connect_args={"check_same_thread": False} if "sqlite" in DATABASE_URL else {}
